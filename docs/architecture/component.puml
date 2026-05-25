@@ -1,0 +1,51 @@
+@startuml component
+title Newsletter — Component Architecture
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+
+actor "Browser" as browser
+
+package "Express app (src/app.js)" as app {
+  [GET / serves signup.html] as get_root
+  [POST / signup handler] as post_root
+  [GET /health] as health
+  [validateBody(zod)] as validate
+}
+
+package "Services" as svc {
+  [MailchimpClient] as mc
+}
+
+cloud "Mailchimp\nMarketing API" as mailchimp
+package "Views" as views {
+  [signup.html]
+  [success.html]
+  [failure.html]
+}
+database "Env config\n(loadConfig, zod)" as config
+
+browser --> get_root : GET /
+browser --> post_root : POST / (form)
+browser --> health : GET /health
+
+post_root --> validate
+validate --> post_root : ok / fail
+post_root --> mc : addSubscriber({fName,lName,email})
+mc --> mailchimp : POST /3.0/lists/{id}/members
+mailchimp --> mc : 2xx / 4xx / 5xx
+
+post_root ..> views : sendFile
+
+[server.js (entrypoint)] --> config : loadConfig()
+[server.js (entrypoint)] --> mc : new MailchimpClient(...)
+[server.js (entrypoint)] --> app : createApp({mailchimp})
+
+note bottom of mc
+  Returns ok=true on 2xx,
+  ok=false on 4xx/5xx,
+  throws MailchimpError on
+  transport failure.
+end note
+@enduml

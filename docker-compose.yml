@@ -1,0 +1,16 @@
+services:
+  newsletter:
+    build: .
+    environment:
+      MAILCHIMP_API_KEY: ${MAILCHIMP_API_KEY:?MAILCHIMP_API_KEY is required}
+      MAILCHIMP_LIST_ID: ${MAILCHIMP_LIST_ID:?MAILCHIMP_LIST_ID is required}
+      MAILCHIMP_SERVER_PREFIX: ${MAILCHIMP_SERVER_PREFIX:-}
+      PORT: 3000
+      LOG_LEVEL: info
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1:3000/health"]
+      interval: 15s
+      timeout: 3s
+      retries: 5

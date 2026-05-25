@@ -1,2 +1,10 @@
-node-modules/*
-package-lock.json
+node_modules/
+coverage/
+.env
+.env.local
+*.log
+npm-debug.log*
+.DS_Store
+.idea/
+.vscode/
+dist/
