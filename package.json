@@ -1,0 +1,34 @@
+{
+  "name": "newsletter",
+  "version": "1.0.0",
+  "description": "Mailchimp newsletter signup service — Express, ESM, env-driven, fully tested.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "undici": "^7.2.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "@vitest/coverage-v8": "^2.1.8",
+    "eslint": "^9.18.0",
+    "globals": "^15.14.0",
+    "nock": "^14.0.0",
+    "supertest": "^7.0.0",
+    "vitest": "^2.1.8"
+  },
+  "license": "MIT"
+}

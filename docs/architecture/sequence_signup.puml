@@ -1,0 +1,41 @@
+@startuml sequence_signup
+title Sequence — POST / (signup)
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+
+actor Browser
+participant "Express\nrouter" as Router
+participant "validateBody\n(zod)" as Validate
+participant "Mailchimp\nClient" as MC
+participant "Mailchimp\nAPI" as API
+participant "views/" as Views
+
+Browser -> Router : POST / (form)
+Router -> Validate : signupSchema.safeParse
+alt invalid body
+  Validate --> Router : failure
+  Router -> Views : sendFile failure.html
+  Router --> Browser : 400 failure.html
+else valid body
+  Validate --> Router : {fName, lName, email}
+  Router -> MC : addSubscriber({firstName, lastName, email})
+  MC -> API : POST /3.0/lists/{id}/members
+  alt 2xx
+    API --> MC : 200/201
+    MC --> Router : {ok:true, status}
+    Router -> Views : sendFile success.html
+    Router --> Browser : 200 success.html
+  else 4xx / 5xx
+    API --> MC : error body
+    MC --> Router : {ok:false, status, detail}
+    Router -> Views : sendFile failure.html
+    Router --> Browser : 502 failure.html
+  else transport error
+    API --> MC : ECONNREFUSED / timeout
+    MC --> Router : throw MailchimpError
+    Router -> Views : sendFile failure.html
+    Router --> Browser : 502 failure.html
+  end
+end
+@enduml

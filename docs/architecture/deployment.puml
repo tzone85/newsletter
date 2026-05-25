@@ -1,0 +1,17 @@
+@startuml deployment
+title Deployment — single container
+
+skinparam shadowing false
+
+node "Docker host" {
+  node "newsletter :3000" {
+    [node 20 + Express + undici]
+  }
+}
+
+cloud "Mailchimp API\nus<n>.api.mailchimp.com" as mailchimp
+cloud "Internet (browsers)" as web
+
+web --> [node 20 + Express + undici] : HTTP :3000
+[node 20 + Express + undici] --> mailchimp : HTTPS POST
+@enduml
